@@ -23,7 +23,7 @@ import time
 
 from PySide6 import QtWidgets, QtCore, QtGui
 
-from ui.c_signals_events_py import Ui_Form
+from ui.c_signals_events_ui import Ui_Form
 
 
 class Window(QtWidgets.QWidget):
