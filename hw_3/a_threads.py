@@ -22,7 +22,7 @@ class SystemInfo(QtCore.QThread):
 
         while True:
             cpu_value = psutil.cpu_percent()
-            ram_value = psutil.virtual_memory().percent()
+            ram_value = psutil.virtual_memory().percent
             self.systemInfoReceived.emit([cpu_value, ram_value])
             time.sleep(self.delay)
 
