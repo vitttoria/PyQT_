@@ -22,7 +22,7 @@ from PySide6 import QtWidgets, QtCore
 from ui.monitorin_2_ui import Ui_MainWindow
 
 
-class Window(QtWidgets.QWidget):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -62,9 +62,9 @@ class Window(QtWidgets.QWidget):
     #         self.ui.busy_volume_value.appendPlainText(str(i.info))
 
     def updProcessInfo(self, data):
-        self.ui.process_info.clear()
+        self.ui.processplainTextEdit.clear()
         for i in data:
-            self.ui.process_info.append(str(i.info))
+            self.ui.processplainTextEdit.appendPlainText(str(i.info))
 
     #
     # def ServiceInfo(self, data):

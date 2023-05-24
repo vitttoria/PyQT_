@@ -1,7 +1,19 @@
+# class Ui_MainWindow(QtWidgets.QMainWindow):
+#     def setupUi(self, MainWindow):
+#         if not MainWindow.objectName():
+#             MainWindow.setObjectName(u"MainWindow")
+#         MainWindow.resize(866, 653)
+#         self.centralwidget = QtWidgets.QMainWindow()
+#         self.centralwidget.setObjectName(u"centralwidget")
+#         self.gridLayout = QGridLayout(self.centralwidget)
+#         self.gridLayout.setObjectName(u"gridLayout")
+#         self.computer_tabwidget = QTabWidget(self.centralwidget)
+#         self.computer_tabwidget.setObjectName(u"computer_tabwidget")
+
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'monitorin_2_uiHRoLXn.ui'
+## Form generated from reading UI file 'monitorin_2_uiPGzRYH.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.0
 ##
@@ -19,13 +31,14 @@ from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHBoxLayout
     QLabel, QMainWindow, QMenuBar, QPlainTextEdit,
     QScrollArea, QSizePolicy, QSpinBox, QStatusBar,
     QTabWidget, QTextEdit, QWidget)
+from PySide6 import QtWidgets, QtGui
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(866, 653)
-        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget = QtWidgets.QMainWindow()
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -40,7 +53,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 794, 488))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 792, 464))
         self.gridLayout_10 = QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_10.setObjectName(u"gridLayout_10")
         self.process_group = QGroupBox(self.scrollAreaWidgetContents_2)
@@ -236,10 +249,10 @@ class Ui_MainWindow(object):
         self.tab_2.setObjectName(u"tab_2")
         self.gridLayout_3 = QGridLayout(self.tab_2)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.process_info = QTextEdit(self.tab_2)
-        self.process_info.setObjectName(u"process_info")
+        self.processplainTextEdit = QPlainTextEdit(self.tab_2)
+        self.processplainTextEdit.setObjectName(u"processplainTextEdit")
 
-        self.gridLayout_3.addWidget(self.process_info, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.processplainTextEdit, 0, 0, 1, 1)
 
         self.computer_tabwidget.addTab(self.tab_2, "")
         self.tab_3 = QWidget()
@@ -261,7 +274,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 794, 521))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 792, 480))
         self.gridLayout_2 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.task_info = QPlainTextEdit(self.scrollAreaWidgetContents)
@@ -280,7 +293,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 866, 24))
+        self.menubar.setGeometry(QRect(0, 0, 864, 24))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -288,7 +301,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.computer_tabwidget.setCurrentIndex(0)
+        self.computer_tabwidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -313,4 +326,5 @@ class Ui_MainWindow(object):
         self.computer_tabwidget.setTabText(self.computer_tabwidget.indexOf(self.tab_3), QCoreApplication.translate("MainWindow", u"\u0421\u043b\u0443\u0436\u0431\u044b", None))
         self.computer_tabwidget.setTabText(self.computer_tabwidget.indexOf(self.tab_4), QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0434\u0430\u0447\u0438", None))
     # retranslateUi
+
 
