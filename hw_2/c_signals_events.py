@@ -47,6 +47,8 @@ class Window(QtWidgets.QWidget):
         self.ui.pushButtonRB.clicked.connect(self.MoveToRB)
         self.ui.pushButtonCenter.clicked.connect(self.MoveToCenter)
         self.ui.pushButtonMoveCoords.clicked.connect(self.on_changedX)
+        # self.ui.spinBoxX.textChanged.connect(self.on_changedX())
+        # self.ui.spinBoxY.textChanged.connect(self.on_changedX())
         # self.ui.pushButtonMoveCoords.clicked.connect(self.on_changedY)
         self.ui.pushButtonGetData.clicked.connect(self.onPushButtonGetData)
 

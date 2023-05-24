@@ -36,19 +36,19 @@ class Window(QtWidgets.QWidget):
         self.ui.comboBox.addItems(["bin", "dec"])
         self.ui.comboBox.insertItem(0, "")
 
-        self.loadData()
+        # self.loadData()
         self.initSignals()
         self.ui.dial.installEventFilter(self)
 
-    def loadData(self) -> None:
-        """
-        Загрузка данных в Ui
-
-        :return: None
-        """
-
-        self.ui.comboBox.setCurrentText(self.settings.value("Формат", ""))
-        self.ui.lcdNumber.display(self.settings.value("Значение", ""))
+    # def loadData(self) -> None:
+    #     """
+    #     Загрузка данных в Ui
+    #
+    #     :return: None
+    #     """
+    #
+    #     self.ui.comboBox.setCurrentText(self.settings.value("Формат", ""))
+    #     self.ui.lcdNumber.display(self.settings.value("Значение", ""))
 
     def initSignals(self) -> None:
         """
@@ -111,15 +111,15 @@ class Window(QtWidgets.QWidget):
     def combobox_change(self):
         self.ui.lcdNumber.display(self.ui.dial.value())
 
-    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
-        """
-        Событие закрытия окна и сохранения данных
-
-        :param event: QtGui.QCloseEvent
-        :return: None
-        """
-        self.settings.setValue("Формат", self.ui.comboBox.currentText())
-        self.settings.setValue("Значение", self.ui.lcdNumber.value())
+    # def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+    #     """
+    #     Событие закрытия окна и сохранения данных
+    #
+    #     :param event: QtGui.QCloseEvent
+    #     :return: None
+    #     """
+    #     self.settings.setValue("Формат", self.ui.comboBox.currentText())
+    #     self.settings.setValue("Значение", self.ui.lcdNumber.value())
 
     def closeWindowEvent(self, event: QtGui.QCloseEvent) -> None:
         """
