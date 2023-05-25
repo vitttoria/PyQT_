@@ -17,7 +17,10 @@ import platform
 import time
 import psutil
 
-from PySide6 import QtWidgets, QtCore
+# import pythoncom
+# import win32com.client
+
+from PySide6 import QtWidgets, QtCore, QtGui
 
 from ui.monitorin_2_ui import Ui_MainWindow
 
@@ -33,76 +36,109 @@ class Window(QtWidgets.QMainWindow):
         self.initSignals()
 
     def initSignals(self) -> None:
-        # self.systemThread.getSystemInfo.connect(self.updSystemInfo)
+        self.systemThread.getSystemInfo.connect(self.updSystemInfo)
         self.processThread.getProcessInfo.connect(self.updProcessInfo)
+        self.serviceThread.getServiceInfo.connect(self.updServiceInfo)
+        # self.taskThread.getTaskInfo.connect(self.updTaskInfo)
 
     def initThreads(self) -> None:
-        # self.systemThread = SystemInfo()
-        # self.systemThread.start()
+        self.systemThread = SystemInfo()
+        self.systemThread.start()
         self.processThread = ProcessInfoThread()
         self.processThread.start()
+        self.serviceThread = ServiceInfoThread()
+        # self.taskThread = TaskInfoThread()
+        # self.taskThread.start()
 
-    # def updSystemInfo(self, data):
-    #     self.ui.process_name_text.clear()
-    #     self.ui.cores_count_value.clear()
-    #     self.ui.current_load_value.clear()
-    #     self.ui.memory_volume_value.clear()
-    #     self.ui.load_memory_value.clear()
-    #     self.ui.disk_count_value.clear()
-    #     self.ui.volume_value.clear()
-    #     self.ui.busy_volume_value.clear()
-    #     for i in data:
-    #         self.ui.process_name_text.appendPlainText(str(i.info))
-    #         self.ui.cores_count_value.appendPlainText(str(i.info))
-    #         self.ui.current_load_value.appendPlainText(str(i.info))
-    #         self.ui.memory_volume_value.appendPlainText(str(i.info))
-    #         self.ui.load_memory_value.appendPlainText(str(i.info))
-    #         self.ui.disk_count_value.appendPlainText(str(i.info))
-    #         self.ui.volume_value.appendPlainText(str(i.info))
-    #         self.ui.busy_volume_value.appendPlainText(str(i.info))
+    def closeWindowEvent(self, event: QtGui.QCloseEvent) -> None:
+        """
+        Событие закрытия окна
+
+        :param event: QtGui.QCloseEvent
+        :return: None
+        """
+
+        answer = QtWidgets.QMessageBox.question(self, "Закрыть окно?", "Вы действительно хотите закрыть окно?")
+
+        if answer == QtWidgets.QMessageBox.Yes:
+            event.accept()
+            SystemInfo.finished()
+            ProcessInfoThread.finished()
+            ServiceInfoThread.finished()
+        else:
+            event.ignore()
+
+    def updSystemInfo(self, data):
+        self.ui.process_name_text.clear()
+        self.ui.cores_count_value.clear()
+        self.ui.current_load_value.clear()
+        self.ui.memory_volume_value.clear()
+        self.ui.load_memory_value.clear()
+        self.ui.disk_count_value.clear()
+        self.ui.volume_value.clear()
+        self.ui.busy_volume_value.clear()
+        for _ in data:
+            self.ui.process_name_text.appendPlainText(f'{platform.processor()}')
+            self.ui.cores_count_value.appendPlainText(f'{psutil.cpu_count()}')
+            self.ui.current_load_value.appendPlainText(f'{psutil.cpu_percent()}')
+            self.ui.memory_volume_value.appendPlainText(f'{psutil.virtual_memory().total}')
+            self.ui.load_memory_value.appendPlainText(f'{psutil.virtual_memory().percent}')
+            self.ui.disk_count_value.appendPlainText(f'{len(psutil.disk_partitions())}')
+            # self.ui.busy_volume_value.appendPlainText(f'{psutil.disk_usage(i.mountpoint)}')
+            # pathes = [i.mountpoint for i in psutil.disk_partitions()]
+            # self.ui.volume_value.appendPlainText(f'{round(psutil.disk_usage(i).total / 1073741824, 2)}')
+            # self.ui.busy_volume_value.appendPlainText(f'{round(psutil.disk_usage(i).total / 1073741824, 2)}/'
+            #                                           f'{round(psutil.disk_usage(i).used / 1073741824, 2)}')
 
     def updProcessInfo(self, data):
         self.ui.processplainTextEdit.clear()
         for i in data:
-            self.ui.processplainTextEdit.appendPlainText(str(i.info))
+            self.ui.processplainTextEdit.appendPlainText(str(i))
+
+    def updServiceInfo(self, data):
+        self.ui.service_info.clear()
+        for i in data:
+            self.ui.service_info.append(str(i))
 
     #
-    # def ServiceInfo(self, data):
-    #     self.ui.service_info.clear()
-    #     for i in data:
-    #         self.ui.service_info.append(str(i.info))
-    #
-    # def TaskInfo(self, data):
+    # def updTaskInfo(self, data):
     #     self.ui.task_info.clear()
     #     for i in data:
-    #         self.ui.task_info.appendPlainText(str(i.info))
+    #         self.ui.task_info.appendPlainText(str(i))
 
     def spinbox_value(self, value):
-        # self.systemThread.delay = value
+        self.systemThread.delay = value
         self.processThread.delay = value
+        self.serviceThread.delay = value
+        # self.taskInfoThread.delay = value
 
 
-# class SystemInfo(QtCore.QThread):
-#     getSystemInfo = QtCore.Signal(dict)
-#
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.data = {}
-#         self.delay = None
-#
-#     def run(self) -> None:
-#         if self.delay is None:
-#             self.delay = 1
-#         while True:
-#             self.data = platform.processor()
-#             self.data = psutil.cpu_count()
-#             self.data = psutil.cpu_percent()
-#             self.data = psutil.virtual_memory().total
-#             self.data = psutil.virtual_memory().percent
-#             self.data = psutil.disk_partitions()
-#             # self.data = psutil.disk_usage()
-#             self.getSystemInfo.emit(self.data)
-#             time.sleep(self.delay)
+class SystemInfo(QtCore.QThread):
+    getSystemInfo = QtCore.Signal(object)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.data = list
+        self.delay = None
+
+    def run(self) -> None:
+        if self.delay is None:
+            self.delay = 1
+        while True:
+            self.data = platform.processor()
+            self.data = psutil.cpu_count()
+            self.data = psutil.cpu_percent()
+            self.data = psutil.virtual_memory().total
+            self.data = psutil.virtual_memory().percent
+            self.data = psutil.disk_partitions()
+            pathes = [i.mountpoint for i in psutil.disk_partitions()]
+            self.data = \
+                [
+                    f"{round(psutil.disk_usage(i).total / 1073741824, 2)}" \
+                    f"/{round(psutil.disk_usage(i).used / 1073741824, 2)}"
+                    for i in pathes]
+            self.getSystemInfo.emit(self.data)
+            time.sleep(self.delay)
 
 
 class ProcessInfoThread(QtCore.QThread):
@@ -110,7 +146,7 @@ class ProcessInfoThread(QtCore.QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.data = None
+        self.data = {}
         self.delay = None
 
     def run(self) -> None:
@@ -122,22 +158,34 @@ class ProcessInfoThread(QtCore.QThread):
             time.sleep(self.delay)
 
 
-#
-# class ServiceInfoThread(QtCore.QThread):
-#     getServiceInfo = QtCore.Signal(object)
-#
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.data = None
-#         self.delay = None
-#
-#     def run(self) -> None:
-#         if self.delay is None:
-#             self.delay = 1
-#         while True:
-#             self.data = psutil.win_service_iter()
-#             self.getServiceInfo.emit(self.data)
-#             time.sleep(self.delay)
+class ServiceInfoThread(QtCore.QThread):
+    getServiceInfo = QtCore.Signal(object)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.data = None
+        self.delay = None
+
+    def run(self) -> None:
+        if self.delay is None:
+            self.delay = 1
+        while True:
+            self.data = psutil.win_service_iter()
+            self.getServiceInfo.emit(self.data)
+            time.sleep(self.delay)
+
+
+class TaskInfoThread(QtCore.QThread):
+    getTaskInfo = QtCore.Signal(object)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.delay = None
+
+    def run(self) -> None:
+        if self.delay is None:
+            self.delay = 5
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication()

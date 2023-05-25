@@ -1,14 +1,9 @@
-# class Ui_MainWindow(QtWidgets.QMainWindow):
-#     def setupUi(self, MainWindow):
-#         if not MainWindow.objectName():
-#             MainWindow.setObjectName(u"MainWindow")
-#         MainWindow.resize(866, 653)
-#         self.centralwidget = QtWidgets.QMainWindow()
-#         self.centralwidget.setObjectName(u"centralwidget")
-#         self.gridLayout = QGridLayout(self.centralwidget)
-#         self.gridLayout.setObjectName(u"gridLayout")
-#         self.computer_tabwidget = QTabWidget(self.centralwidget)
-#         self.computer_tabwidget.setObjectName(u"computer_tabwidget")
+# class Ui_MainWindow(object):
+    # def setupUi(self, MainWindow):
+    #     if not MainWindow.objectName():
+    #         MainWindow.setObjectName(u"MainWindow")
+    #     MainWindow.resize(866, 653)
+    #     self.centralwidget = QWidget(MainWindow)
 
 # -*- coding: utf-8 -*-
 
@@ -33,12 +28,12 @@ from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHBoxLayout
     QTabWidget, QTextEdit, QWidget)
 from PySide6 import QtWidgets, QtGui
 
-class Ui_MainWindow(QtWidgets.QMainWindow):
+class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(866, 653)
-        self.centralwidget = QtWidgets.QMainWindow()
+        MainWindow.resize(700, 700)
+        self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -72,6 +67,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.process_name_text = QPlainTextEdit(self.process_group)
         self.process_name_text.setObjectName(u"process_name_text")
         self.process_name_text.setMaximumSize(QSize(16777215, 30))
+        self.process_name_text.setReadOnly(True)
 
         self.horizontalLayout_10.addWidget(self.process_name_text)
 
@@ -90,6 +86,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.cores_count_value = QPlainTextEdit(self.process_group)
         self.cores_count_value.setObjectName(u"cores_count_value")
         self.cores_count_value.setMaximumSize(QSize(16777215, 30))
+        self.cores_count_value.setReadOnly(True)
 
         self.horizontalLayout_11.addWidget(self.cores_count_value)
 
@@ -109,6 +106,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.current_load_value = QPlainTextEdit(self.process_group)
         self.current_load_value.setObjectName(u"current_load_value")
         self.current_load_value.setMaximumSize(QSize(16777215, 30))
+        self.current_load_value.setReadOnly(True)
 
         self.horizontalLayout_12.addWidget(self.current_load_value)
 
@@ -134,6 +132,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.memory_volume_value = QPlainTextEdit(self.memory_group)
         self.memory_volume_value.setObjectName(u"memory_volume_value")
         self.memory_volume_value.setMaximumSize(QSize(16777215, 30))
+        self.memory_volume_value.setReadOnly(True)
 
         self.horizontalLayout_13.addWidget(self.memory_volume_value)
 
@@ -152,6 +151,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.load_memory_value = QPlainTextEdit(self.memory_group)
         self.load_memory_value.setObjectName(u"load_memory_value")
         self.load_memory_value.setMaximumSize(QSize(16777215, 30))
+        self.load_memory_value.setReadOnly(True)
 
         self.horizontalLayout_14.addWidget(self.load_memory_value)
 
@@ -177,6 +177,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.disk_count_value = QPlainTextEdit(self.hard_disk)
         self.disk_count_value.setObjectName(u"disk_count_value")
         self.disk_count_value.setMaximumSize(QSize(16777215, 30))
+        self.disk_count_value.setReadOnly(True)
 
         self.horizontalLayout_15.addWidget(self.disk_count_value)
 
@@ -195,6 +196,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.volume_value = QPlainTextEdit(self.hard_disk)
         self.volume_value.setObjectName(u"volume_value")
         self.volume_value.setMaximumSize(QSize(16777215, 30))
+        self.volume_value.setReadOnly(True)
 
         self.horizontalLayout_16.addWidget(self.volume_value)
 
@@ -213,6 +215,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.busy_volume_value = QPlainTextEdit(self.hard_disk)
         self.busy_volume_value.setObjectName(u"busy_volume_value")
         self.busy_volume_value.setMaximumSize(QSize(16777215, 30))
+        self.busy_volume_value.setReadOnly(True)
 
         self.horizontalLayout_17.addWidget(self.busy_volume_value)
 
@@ -251,6 +254,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.processplainTextEdit = QPlainTextEdit(self.tab_2)
         self.processplainTextEdit.setObjectName(u"processplainTextEdit")
+        self.processplainTextEdit.setReadOnly(True)
 
         self.gridLayout_3.addWidget(self.processplainTextEdit, 0, 0, 1, 1)
 
@@ -261,6 +265,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.service_info = QTextEdit(self.tab_3)
         self.service_info.setObjectName(u"service_info")
+        self.service_info.setReadOnly(True)
 
         self.gridLayout_4.addWidget(self.service_info, 0, 0, 1, 1)
 
@@ -279,6 +284,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.task_info = QPlainTextEdit(self.scrollAreaWidgetContents)
         self.task_info.setObjectName(u"task_info")
+        self.task_info.setReadOnly(True)
 
         self.gridLayout_2.addWidget(self.task_info, 0, 0, 1, 1)
 
