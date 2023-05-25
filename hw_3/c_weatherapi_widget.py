@@ -16,7 +16,7 @@ from PySide6 import QtWidgets
 from PySide6.QtWidgets import QApplication
 
 from hw_3.a_threads import WeatherHandler
-from ui.weather_api_ui import Ui_WeatherAPI
+from ui.weather_api_ui import Ui_MainWindow
 
 
 class Window(QtWidgets.QMainWindow):
@@ -25,27 +25,28 @@ class Window(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.initThreads()
-        self.ui = Ui_WeatherAPI()
+        self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.initSignals()
 
     def initThreads(self) -> None:
         """Инициализация потоков"""
-        self.WeatherThread = None
+        self.WeatherThread = WeatherHandler(0, 0)
 
     def initSignals(self) -> None:
         """Инициализация сигналов"""
-        self.ui.start_pushButton.clicked.connect(self.lat_lon_input)
         self.ui.lineEdit.textChanged.connect(self.delay)
+        self.ui.start_pushButton.clicked.connect(self.lat_lon_input)
+        self.ui.start_pushButton.clicked.connect(self.stopThread)
 
     def lat_lon_input(self):
         if self.WeatherThread is None or not self.WeatherThread.isRunning():
             lat = self.ui.shirota_lineEdit.text()
             lon = self.ui.dolgota_lineEdit.text()
-            delay = float(self.ui.lineEdit.text())
+            # delay = float(self.delay.text())
 
             self.WeatherThread = WeatherHandler(lat, lon)
-            self.WeatherThread.setDelay(delay)
+            # self.WeatherThread.setDelay(delay)
             self.WeatherThread.weatherData.connect(self.updInfo)
             self.WeatherThread.start()
 
@@ -58,23 +59,22 @@ class Window(QtWidgets.QMainWindow):
             self.WeatherThread.wait()
             self.WeatherThread = None
 
-        if self.WeatherThread.isFinished():
-            self.ui.shirota_lineEdit.setEnabled(True)
-            self.ui.dolgota_lineEdit.setEnabled(True)
-            self.ui.lineEdit.setEnabled(True)
-            self.ui.start_pushButton.setText("Старт")
-
     def updInfo(self, weather_info):
         lat, lon = weather_info
         self.ui.shirota_lineEdit.setText(lat)
         self.ui.dolgota_lineEdit.setText(lon)
 
-    def delay(self, delay):
-        try:
-            delay = float(delay)
-            self.WeatherThread.delay = delay
-        except ValueError:
-            pass
+    def stopThread(self):
+        if self.WeatherThread.isFinished():
+            self.WeatherThread.weatherData.connect(self.updInfo)
+            self.WeatherThread.finished()
+            self.ui.shirota_lineEdit.setEnabled(True)
+            self.ui.dolgota_lineEdit.setEnabled(True)
+            self.ui.lineEdit.setEnabled(True)
+            self.ui.start_pushButton.setText("Старт")
+
+    def delay(self):
+        self.WeatherThread.setDelay(self.ui.lineEdit.text())
 
 
 if __name__ == "__main__":
