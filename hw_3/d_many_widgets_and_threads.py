@@ -7,7 +7,7 @@ from PySide6 import QtWidgets
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QHBoxLayout, QMainWindow, QWidget
 
 from b_systeminfo_widget import Ui_MainWindow
-from c_weatherapi_widget import Ui_WeatherAPI
+from c_weatherapi_widget import Ui_MainWindow
 
 
 class ComboWidget(QWidget):
@@ -16,7 +16,7 @@ class ComboWidget(QWidget):
         self.setWindowTitle("ComboWidget")
 
         b_systeminfo_widget = Ui_MainWindow()
-        c_weatherapi_widget = Ui_WeatherAPI()
+        c_weatherapi_widget = Ui_MainWindow()
 
         layout = QVBoxLayout()
         layout.addWidget(b_systeminfo_widget)
