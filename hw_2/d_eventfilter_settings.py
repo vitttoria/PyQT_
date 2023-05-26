@@ -20,6 +20,7 @@
 
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtWidgets import QDial
+import sys
 
 from ui.d_eventfilter_settings_ui import Ui_Form
 
@@ -60,23 +61,17 @@ class Window(QtWidgets.QWidget):
         self.ui.lcdNumber.display(self.change_form(self.ui.dial.value()))
         self.ui.comboBox.currentTextChanged.connect(self.combobox_change)
 
-    def PressEvent(self, watched: QtCore.QObject, event: QtGui.QKeyEvent) -> bool:
+    def PressEvent(self, event: QtGui.QKeyEvent) -> None:
         """
         Установка значений кнопками клавиатуры (+, -)
         :param self:
-        :param watched:
         :param event:
         :return: 
         """
-        if watched == self.ui.dial and event.type() == QtCore.QEvent.Type.KeyPress:
-            if event.key() == QtCore.Qt.Key.Key_Plus:
-                self.ui.dial.setValue(self.ui.dial.value() + 1)
-                print(self.ui.dial.value())
-        if watched == self.ui.dial and event.type() == QtCore.QEvent.Type.KeyPress:
-            if event.key() == QtCore.Qt.Key.Key_Minus:
-                self.ui.dial.setValue(self.ui.dial.value() - 1)
-                print(self.ui.dial.value())
-        return super(Window, self).eventFilter(watched, event)
+        if event.key() == QtCore.Qt.Key.Key_Plus:
+            self.ui.dial.setValue(self.ui.dial.value() + 1)
+        if event.key() == QtCore.Qt.Key.Key_Minus:
+            self.ui.dial.setValue(self.ui.dial.value() - 1)
 
     def change_form(self, value):
         """
@@ -111,15 +106,15 @@ class Window(QtWidgets.QWidget):
     def combobox_change(self):
         self.ui.lcdNumber.display(self.ui.dial.value())
 
-    # def closeEvent(self, event: QtGui.QCloseEvent) -> None:
-    #     """
-    #     Событие закрытия окна и сохранения данных
-    #
-    #     :param event: QtGui.QCloseEvent
-    #     :return: None
-    #     """
-    #     self.settings.setValue("Формат", self.ui.comboBox.currentText())
-    #     self.settings.setValue("Значение", self.ui.lcdNumber.value())
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        """
+        Событие закрытия окна и сохранения данных
+
+        :param event: QtGui.QCloseEvent
+        :return: None
+        """
+        self.settings.setValue(self.ui.comboBox.currentText())
+        self.settings.setValue(self.ui.lcdNumber.value())
 
     def closeWindowEvent(self, event: QtGui.QCloseEvent) -> None:
         """

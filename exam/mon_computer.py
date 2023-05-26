@@ -17,8 +17,8 @@ import platform
 import time
 import psutil
 
-# import pythoncom
-# import win32com.client
+import pythoncom
+import win32com.client
 
 from PySide6 import QtWidgets, QtCore, QtGui
 
@@ -39,7 +39,7 @@ class Window(QtWidgets.QMainWindow):
         self.systemThread.getSystemInfo.connect(self.updSystemInfo)
         self.processThread.getProcessInfo.connect(self.updProcessInfo)
         self.serviceThread.getServiceInfo.connect(self.updServiceInfo)
-        # self.taskThread.getTaskInfo.connect(self.updTaskInfo)
+        self.taskThread.getTaskInfo.connect(self.updTaskInfo)
 
     def initThreads(self) -> None:
         self.systemThread = SystemInfo()
@@ -47,8 +47,8 @@ class Window(QtWidgets.QMainWindow):
         self.processThread = ProcessInfoThread()
         self.processThread.start()
         self.serviceThread = ServiceInfoThread()
-        # self.taskThread = TaskInfoThread()
-        # self.taskThread.start()
+        self.taskThread = TaskInfoThread()
+        self.taskThread.start()
 
     def closeWindowEvent(self, event: QtGui.QCloseEvent) -> None:
         """
@@ -77,18 +77,23 @@ class Window(QtWidgets.QMainWindow):
         self.ui.disk_count_value.clear()
         self.ui.volume_value.clear()
         self.ui.busy_volume_value.clear()
-        for _ in data:
+        for i in data:
             self.ui.process_name_text.appendPlainText(f'{platform.processor()}')
             self.ui.cores_count_value.appendPlainText(f'{psutil.cpu_count()}')
             self.ui.current_load_value.appendPlainText(f'{psutil.cpu_percent()}')
             self.ui.memory_volume_value.appendPlainText(f'{psutil.virtual_memory().total}')
             self.ui.load_memory_value.appendPlainText(f'{psutil.virtual_memory().percent}')
             self.ui.disk_count_value.appendPlainText(f'{len(psutil.disk_partitions())}')
-            # self.ui.busy_volume_value.appendPlainText(f'{psutil.disk_usage(i.mountpoint)}')
-            # pathes = [i.mountpoint for i in psutil.disk_partitions()]
-            # self.ui.volume_value.appendPlainText(f'{round(psutil.disk_usage(i).total / 1073741824, 2)}')
-            # self.ui.busy_volume_value.appendPlainText(f'{round(psutil.disk_usage(i).total / 1073741824, 2)}/'
-            #                                           f'{round(psutil.disk_usage(i).used / 1073741824, 2)}')
+            self.ui.busy_volume_value.appendPlainText(f'{psutil.disk_usage(i.mountpoint)}')
+            pathes = [i.mountpoint for i in psutil.disk_partitions()]
+            self.ui.memory_volume_value = \
+                [
+                    f"{round(psutil.disk_usage(i).total / 1073741824, 2)}"
+                    for i in pathes]
+            self.ui.load_memory_value = \
+                [
+                    f"{round(psutil.disk_usage(i).total / 1073741824, 2)}/{round(psutil.disk_usage(i).used / 1073741824, 2)}"
+                    for i in pathes]
 
     def updProcessInfo(self, data):
         self.ui.processplainTextEdit.clear()
@@ -100,17 +105,16 @@ class Window(QtWidgets.QMainWindow):
         for i in data:
             self.ui.service_info.append(str(i))
 
-    #
-    # def updTaskInfo(self, data):
-    #     self.ui.task_info.clear()
-    #     for i in data:
-    #         self.ui.task_info.appendPlainText(str(i))
+    def updTaskInfo(self, data):
+        self.ui.task_info.clear()
+        for i in data:
+            self.ui.task_info.appendPlainText(str(i))
 
     def spinbox_value(self, value):
         self.systemThread.delay = value
         self.processThread.delay = value
         self.serviceThread.delay = value
-        # self.taskInfoThread.delay = value
+        self.taskThread.delay = value
 
 
 class SystemInfo(QtCore.QThread):
@@ -185,6 +189,17 @@ class TaskInfoThread(QtCore.QThread):
     def run(self) -> None:
         if self.delay is None:
             self.delay = 5
+
+    pythoncom.CoInitialize()
+
+    while True:
+        scheduler = win32com.client.dynamic.Dispatch('Schedule.Service')
+        scheduler.Connect()
+        tasks = scheduler.GetRunningTasks(1)
+        names = [tasks.Item(i + 1).Name for i in range(tasks.Count)]
+        print(names)
+        self.getTaskInfo.emit(names)
+        time.sleep(self.delay)
 
 
 if __name__ == "__main__":
