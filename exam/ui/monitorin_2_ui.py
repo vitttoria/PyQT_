@@ -263,7 +263,7 @@ class Ui_MainWindow(object):
         self.tab_3.setObjectName(u"tab_3")
         self.gridLayout_4 = QGridLayout(self.tab_3)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.service_info = QTextEdit(self.tab_3)
+        self.service_info = QPlainTextEdit(self.tab_3)
         self.service_info.setObjectName(u"service_info")
         self.service_info.setReadOnly(True)
 

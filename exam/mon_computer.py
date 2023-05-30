@@ -1,9 +1,6 @@
 """Задача.
-
 Разработать приложение для мониторинга нагрузки системы и системных процессов (аналог диспетчера задач).
-
 Обязательные функции в приложении:
-
 Показ общих сведений о системе (в текстовом виде!):
 Название процессора, количество ядер, текущая загрузка
 Общий объём оперативной памяти, текущая загрузка оперативаной памяти
@@ -14,12 +11,12 @@
 Показ задач, которые запускаются с помощью планировщика задач
 """
 import platform
+import shutil
 import time
-import psutil
 
+import psutil
 import pythoncom
 import win32com.client
-
 from PySide6 import QtWidgets, QtCore, QtGui
 
 from ui.monitorin_2_ui import Ui_MainWindow
@@ -36,81 +33,82 @@ class Window(QtWidgets.QMainWindow):
         self.initSignals()
 
     def initSignals(self) -> None:
+        """
+        Инициализация сигналов
+        :return:
+        """
         self.systemThread.getSystemInfo.connect(self.updSystemInfo)
         self.processThread.getProcessInfo.connect(self.updProcessInfo)
         self.serviceThread.getServiceInfo.connect(self.updServiceInfo)
         self.taskThread.getTaskInfo.connect(self.updTaskInfo)
 
     def initThreads(self) -> None:
+        """
+        Инициализация потоков
+        :return:
+        """
         self.systemThread = SystemInfo()
         self.systemThread.start()
         self.processThread = ProcessInfoThread()
         self.processThread.start()
         self.serviceThread = ServiceInfoThread()
+        self.serviceThread.start()
         self.taskThread = TaskInfoThread()
         self.taskThread.start()
 
-    def closeWindowEvent(self, event: QtGui.QCloseEvent) -> None:
+    def updSystemInfo(self, system_info):
         """
-        Событие закрытия окна
-
-        :param event: QtGui.QCloseEvent
-        :return: None
+        Настройка вывода параметров о системе: процессор, ядра, диски и т.д
+        :param system_info:
+        :return:
         """
-
-        answer = QtWidgets.QMessageBox.question(self, "Закрыть окно?", "Вы действительно хотите закрыть окно?")
-
-        if answer == QtWidgets.QMessageBox.Yes:
-            event.accept()
-            SystemInfo.finished()
-            ProcessInfoThread.finished()
-            ServiceInfoThread.finished()
-        else:
-            event.ignore()
-
-    def updSystemInfo(self, data):
-        self.ui.process_name_text.clear()
-        self.ui.cores_count_value.clear()
-        self.ui.current_load_value.clear()
-        self.ui.memory_volume_value.clear()
-        self.ui.load_memory_value.clear()
-        self.ui.disk_count_value.clear()
-        self.ui.volume_value.clear()
-        self.ui.busy_volume_value.clear()
-        for i in data:
-            self.ui.process_name_text.appendPlainText(f'{platform.processor()}')
-            self.ui.cores_count_value.appendPlainText(f'{psutil.cpu_count()}')
-            self.ui.current_load_value.appendPlainText(f'{psutil.cpu_percent()}')
-            self.ui.memory_volume_value.appendPlainText(f'{psutil.virtual_memory().total}')
-            self.ui.load_memory_value.appendPlainText(f'{psutil.virtual_memory().percent}')
-            self.ui.disk_count_value.appendPlainText(f'{len(psutil.disk_partitions())}')
-            self.ui.busy_volume_value.appendPlainText(f'{psutil.disk_usage(i.mountpoint)}')
-            pathes = [i.mountpoint for i in psutil.disk_partitions()]
-            self.ui.memory_volume_value = \
-                [
-                    f"{round(psutil.disk_usage(i).total / 1073741824, 2)}"
-                    for i in pathes]
-            self.ui.load_memory_value = \
-                [
-                    f"{round(psutil.disk_usage(i).total / 1073741824, 2)}/{round(psutil.disk_usage(i).used / 1073741824, 2)}"
-                    for i in pathes]
+        processor, cpu_count, cpu_percent, virtual_memory_total, virtual_memory_percent, \
+            disk_partitions, disk_usage_total, disk_usage_used = system_info
+        self.ui.process_name_text.appendPlainText(f'{processor}')
+        self.ui.cores_count_value.appendPlainText(f'{cpu_count}')
+        self.ui.current_load_value.appendPlainText(f'{cpu_percent}')
+        self.ui.memory_volume_value.appendPlainText(f'{virtual_memory_total}')
+        self.ui.load_memory_value.appendPlainText(f'{virtual_memory_percent}')
+        self.ui.disk_count_value.appendPlainText(f'{disk_partitions}')
+        self.ui.volume_value.appendPlainText(f'{round(disk_usage_total/10**9, 2)}')
+        self.ui.busy_volume_value.appendPlainText(f'{round(disk_usage_used/10**9, 2)}')
 
     def updProcessInfo(self, data):
+        """
+        Вывод информации от текущих процессах
+        :param data:
+        :return:
+        """
         self.ui.processplainTextEdit.clear()
         for i in data:
             self.ui.processplainTextEdit.appendPlainText(str(i))
 
     def updServiceInfo(self, data):
+        """
+        Вывод информации о службах
+        :param data:
+        :return:
+        """
         self.ui.service_info.clear()
         for i in data:
-            self.ui.service_info.append(str(i))
+            self.ui.service_info.appendPlainText(str(i))
 
     def updTaskInfo(self, data):
+        """
+        Вывод информации о текущих задачах
+        :param data:
+        :return:
+        """
         self.ui.task_info.clear()
         for i in data:
             self.ui.task_info.appendPlainText(str(i))
 
     def spinbox_value(self, value):
+        """
+        Настройка задержки
+        :param value:
+        :return:
+        """
         self.systemThread.delay = value
         self.processThread.delay = value
         self.serviceThread.delay = value
@@ -129,19 +127,17 @@ class SystemInfo(QtCore.QThread):
         if self.delay is None:
             self.delay = 1
         while True:
-            self.data = platform.processor()
-            self.data = psutil.cpu_count()
-            self.data = psutil.cpu_percent()
-            self.data = psutil.virtual_memory().total
-            self.data = psutil.virtual_memory().percent
-            self.data = psutil.disk_partitions()
-            pathes = [i.mountpoint for i in psutil.disk_partitions()]
-            self.data = \
-                [
-                    f"{round(psutil.disk_usage(i).total / 1073741824, 2)}" \
-                    f"/{round(psutil.disk_usage(i).used / 1073741824, 2)}"
-                    for i in pathes]
-            self.getSystemInfo.emit(self.data)
+            processor = platform.processor()
+            cpu_count = psutil.cpu_count()
+            cpu_percent = psutil.cpu_percent()
+            virtual_memory_total = psutil.virtual_memory().total
+            virtual_memory_percent = psutil.virtual_memory().percent
+            disk_partitions = len(psutil.disk_partitions())
+            disk_usage = shutil.disk_usage('C:/')
+            disk_usage_total = disk_usage.total
+            disk_usage_used = disk_usage.used
+            self.getSystemInfo.emit([processor, cpu_count, cpu_percent, virtual_memory_total,
+                                     virtual_memory_percent, disk_partitions, disk_usage_total, disk_usage_used])
             time.sleep(self.delay)
 
 
@@ -190,16 +186,33 @@ class TaskInfoThread(QtCore.QThread):
         if self.delay is None:
             self.delay = 5
 
-    pythoncom.CoInitialize()
+        pythoncom.CoInitialize()
 
-    while True:
-        scheduler = win32com.client.dynamic.Dispatch('Schedule.Service')
-        scheduler.Connect()
-        tasks = scheduler.GetRunningTasks(1)
-        names = [tasks.Item(i + 1).Name for i in range(tasks.Count)]
-        print(names)
-        self.getTaskInfo.emit(names)
-        time.sleep(self.delay)
+        while True:
+            scheduler = win32com.client.dynamic.Dispatch('Schedule.Service')
+            scheduler.Connect()
+            tasks = scheduler.GetRunningTasks(1)
+            names = [tasks.Item(i + 1).Name for i in range(tasks.Count)]
+            print(names)
+            self.getTaskInfo.emit(names)
+            time.sleep(self.delay)
+
+    # def closeWindowEvent(self, event: QtGui.QCloseEvent) -> None:
+    #     """
+    #     Событие закрытия окна
+    #     :param event: QtGui.QCloseEvent
+    #     :return: None
+    #     """
+    #
+    #     answer = QtWidgets.QMessageBox.question(self, "Закрыть окно?", "Вы действительно хотите закрыть окно?")
+    #
+    #     if answer == QtWidgets.QMessageBox.Yes:
+    #         event.accept()
+    #         SystemInfo.finished()
+    #         ProcessInfoThread.finished()
+    #         ServiceInfoThread.finished()
+    #     else:
+    #         event.ignore()
 
 
 if __name__ == "__main__":
@@ -207,3 +220,4 @@ if __name__ == "__main__":
     window = Window()
     window.show()
     app.exec()
+
